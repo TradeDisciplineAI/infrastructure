@@ -1,0 +1,26 @@
+# =============================================================================
+# Terraform Variables Values Template (Example)
+# Copy this file to 'terraform.tfvars' before running 'terraform apply'.
+# DO NOT commit 'terraform.tfvars' containing real environment credentials!
+# =============================================================================
+
+location            = "eastus"
+resource_group_name = "trading-rg"
+project_name        = "trading"
+environment         = "development"
+
+# Networking Configuration
+vnet_name                  = "trading-vnet"
+vnet_address_space         = ["10.0.0.0/16"]
+aks_subnet_name            = "aks-subnet"
+aks_subnet_address_prefixes = ["10.0.1.0/24"]
+
+# Container Registry Configuration
+acr_name = "tradingacr"
+acr_sku  = "Basic"
+
+# AKS Cluster Configuration
+aks_name       = "trading-aks"
+aks_dns_prefix = "trading-aks-dns"
+aks_node_count = 2
+aks_vm_size    = "Standard_D2s_v5"
