@@ -1,0 +1,80 @@
+---
+# ------------------ Auth Service HTTPRoute -----------------------
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: auth-route
+  namespace: gateway-system
+spec:
+  parentRefs:
+    - name: platform-gateway
+      namespace: gateway-system
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /auth
+      backendRefs:
+        - name: auth-app
+          namespace: authentication
+          port: 8000
+
+---
+# ------------------ Market Service HTTPRoute -----------------------
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: market-route
+  namespace: gateway-system
+spec:
+  parentRefs:
+    - name: platform-gateway
+      namespace: gateway-system
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /dashboard
+        - path:
+            type: PathPrefix
+            value: /portfolio
+        - path:
+            type: PathPrefix
+            value: /alerts
+      backendRefs:
+        - name: market-service
+          namespace: market-service
+          port: 8001
+
+---
+# ------------------ AI Service HTTPRoute -----------------------
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ai-route
+  namespace: gateway-system
+spec:
+  parentRefs:
+    - name: platform-gateway
+      namespace: gateway-system
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /ai-usage
+        - path:
+            type: PathPrefix
+            value: /analyze-news
+        - path:
+            type: PathPrefix
+            value: /agent3
+        - path:
+            type: PathPrefix
+            value: /agent6
+        - path:
+            type: PathPrefix
+            value: /trade-proposals
+      backendRefs:
+        - name: ai-service
+          namespace: ai-service
+          port: 8002
