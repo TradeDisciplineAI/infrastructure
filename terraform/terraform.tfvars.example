@@ -23,4 +23,4 @@ acr_sku  = "Basic"
 aks_name       = "trading-aks"
 aks_dns_prefix = "trading-aks-dns"
 aks_node_count = 2
-aks_vm_size    = "Standard_D2s_v5"
+aks_vm_size    = "Standard_D2s_v7"

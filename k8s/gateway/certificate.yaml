@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tradingcopilot-tls
+  namespace: gateway-system
+spec:
+  secretName: tradingcopilot-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - tradingcopilot.duckdns.org

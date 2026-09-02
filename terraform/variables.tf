@@ -82,5 +82,5 @@ variable "aks_node_count" {
 variable "aks_vm_size" {
   description = "The Virtual Machine SKU size for AKS node pool instances."
   type        = string
-  default     = "Standard_D2s_v5"
+  default     = "Standard_D2s_v7"
 }
