@@ -12,3 +12,6 @@ junit:1418.v67a_81935603c
 htmlpublisher:427.1
 warnings-ng:13.10153.v011f47a_3ef01
 matrix-auth:3.3
+azure-credentials:328.v88e3678096f9
+kubernetes-cli:1.12.1
+configuration-as-code:1850.va_782d46e3a_d7
