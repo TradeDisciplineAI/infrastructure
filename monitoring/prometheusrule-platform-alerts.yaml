@@ -1,0 +1,114 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: trading-platform-alerts
+  namespace: monitoring
+  labels:
+    role: alert-rules
+    release: prometheus
+    app.kubernetes.io/part-of: trading-platform
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: trading-platform-critical.rules
+      rules:
+        - alert: KubernetesPodCrashLooping
+          expr: kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"} == 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod container is crash looping"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is in CrashLoopBackOff state."
+
+        - alert: KubernetesDeploymentUnavailable
+          expr: kube_deployment_status_replicas_available / kube_deployment_spec_replicas < 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Deployment replicas unavailable"
+            description: "Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }} has available replicas below spec requirement."
+
+        - alert: KubernetesPodOOMKilled
+          expr: kube_pod_container_status_terminated_reason{reason="OOMKilled"} == 1
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod container killed due to out-of-memory"
+            description: "Container {{ $labels.container }} in pod {{ $labels.pod }} (namespace {{ $labels.namespace }}) exceeded memory limit."
+
+        - alert: PrometheusTargetDown
+          expr: up{job=~"auth-app|market-service|ai-service|redis|market-redis|ai-qdrant"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Prometheus target scraping down"
+            description: "Scrape target {{ $labels.job }} in namespace {{ $labels.namespace }} at {{ $labels.instance }} is unreachable."
+
+        - alert: RedisUnavailable
+          expr: redis_up == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Redis instance down"
+            description: "Redis exporter reported instance unreachable for pod {{ $labels.pod }} in namespace {{ $labels.namespace }}."
+
+        - alert: QdrantUnavailable
+          expr: up{job="ai-qdrant"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Qdrant vector DB unreachable"
+            description: "Native metrics endpoint for Qdrant vector database is unreachable."
+
+        - alert: GatewayHigh5xxRate
+          expr: (sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) * 100 > 5
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High HTTP 5xx error rate detected across platform"
+            description: "Platform HTTP 5xx server error rate is {{ $value }}%, exceeding critical threshold of 5%."
+
+    - name: trading-platform-warning.rules
+      rules:
+        - alert: NodeHighCPU
+          expr: (100 - (avg by (node) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High node CPU utilization"
+            description: "Node {{ $labels.node }} CPU usage is {{ $value }}%, exceeding warning threshold of 80%."
+
+        - alert: NodeHighMemory
+          expr: (((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes) * 100) > 85
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High node memory utilization"
+            description: "Node {{ $labels.instance }} memory usage is {{ $value }}%, exceeding warning threshold of 85%."
+
+        - alert: HPAAtMaxReplicas
+          expr: kube_horizontalpodautoscaler_status_current_replicas == kube_horizontalpodautoscaler_spec_max_replicas
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "HPA reached max replicas cap"
+            description: "HPA {{ $labels.horizontalpodautoscaler }} in namespace {{ $labels.namespace }} has been running at max replica limit of {{ $value }} for 15m."
+
+        - alert: HighApplicationP95Latency
+          expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 2
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High application HTTP p95 latency detected"
+            description: "HTTP p95 request latency is {{ $value }}s, exceeding 2s warning threshold."
