@@ -1,0 +1,28 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: platform-gateway
+  namespace: gateway-system
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  gatewayClassName: nginx
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "tradingcopilot.duckdns.org"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: tradingcopilot-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: All

@@ -1,0 +1,12 @@
+jenkins:
+  systemMessage: "Trading Discipline AI - Centralized CI/CD Controller"
+  numExecutors: 2
+  scmCheckoutRetryCount: 2
+
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+unclassified:
+  location:
+    url: "${JENKINS_PUBLIC_URL:-http://localhost:8080/}"

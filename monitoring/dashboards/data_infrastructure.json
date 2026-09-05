@@ -1,0 +1,449 @@
+{
+  "title": "Trading Discipline AI \u2014 Data Infrastructure",
+  "uid": "trading-data-infrastructure",
+  "tags": [
+    "trading-platform",
+    "data-infrastructure",
+    "redis",
+    "qdrant"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Auth Redis Status",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP",
+                  "color": "green"
+                },
+                "0": {
+                  "text": "DOWN",
+                  "color": "red"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "targets": [
+        {
+          "expr": "redis_up{namespace=\"authentication\"}",
+          "legendFormat": "Status"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Auth Redis Memory",
+      "type": "gauge",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 4,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "max": 268435456
+        }
+      },
+      "targets": [
+        {
+          "expr": "redis_memory_used_bytes{namespace=\"authentication\"}",
+          "legendFormat": "Memory"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Auth Redis Connected Clients",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 9,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "targets": [
+        {
+          "expr": "redis_connected_clients{namespace=\"authentication\"}",
+          "legendFormat": "Clients"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Auth Redis Commands / sec",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 14,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cps"
+        }
+      },
+      "targets": [
+        {
+          "expr": "rate(redis_commands_processed_total{namespace=\"authentication\"}[5m])",
+          "legendFormat": "Commands/sec"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Auth Redis Evicted Keys",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 19,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "targets": [
+        {
+          "expr": "redis_evicted_keys_total{namespace=\"authentication\"}",
+          "legendFormat": "Evictions"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Market Redis Status",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP",
+                  "color": "green"
+                },
+                "0": {
+                  "text": "DOWN",
+                  "color": "red"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "targets": [
+        {
+          "expr": "redis_up{namespace=\"market-service\"}",
+          "legendFormat": "Status"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Market Redis Memory",
+      "type": "gauge",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 4,
+        "y": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "max": 268435456
+        }
+      },
+      "targets": [
+        {
+          "expr": "redis_memory_used_bytes{namespace=\"market-service\"}",
+          "legendFormat": "Memory"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Market Redis Connected Clients",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 9,
+        "y": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "targets": [
+        {
+          "expr": "redis_connected_clients{namespace=\"market-service\"}",
+          "legendFormat": "Clients"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Market Redis Commands / sec",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 14,
+        "y": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cps"
+        }
+      },
+      "targets": [
+        {
+          "expr": "rate(redis_commands_processed_total{namespace=\"market-service\"}[5m])",
+          "legendFormat": "Commands/sec"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Market Redis Evicted Keys",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 19,
+        "y": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "targets": [
+        {
+          "expr": "redis_evicted_keys_total{namespace=\"market-service\"}",
+          "legendFormat": "Evictions"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Qdrant Vector DB Status",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP",
+                  "color": "green"
+                },
+                "0": {
+                  "text": "DOWN",
+                  "color": "red"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "targets": [
+        {
+          "expr": "app_info{name=\"qdrant\"}",
+          "legendFormat": "Status"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Qdrant Total Collections",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 4,
+        "y": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "targets": [
+        {
+          "expr": "collections_total",
+          "legendFormat": "Collections"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Qdrant Total Vectors",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 9,
+        "y": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "targets": [
+        {
+          "expr": "collections_vector_total",
+          "legendFormat": "Vectors"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Qdrant Active Replicas",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 14,
+        "y": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "targets": [
+        {
+          "expr": "collection_active_replicas_min",
+          "legendFormat": "Replicas"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "Qdrant REST Responses Avg Duration",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 19,
+        "y": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      },
+      "targets": [
+        {
+          "expr": "rest_responses_avg_duration_seconds or vector(0)",
+          "legendFormat": "Avg Duration (s)"
+        }
+      ]
+    }
+  ]
+}

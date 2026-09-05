@@ -1,0 +1,122 @@
+# =============================================================================
+# Resource-Safe kube-prometheus-stack Helm Values for Trading Platform (AKS)
+# =============================================================================
+
+# Disable managed control plane scrapers inaccessible on managed AKS
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+# ── Prometheus Server Configuration ───────────────────────────────────────────
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: 7d
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+  service:
+    type: ClusterIP
+
+# ── Grafana Configuration ─────────────────────────────────────────────────────
+grafana:
+  enabled: true
+  adminPassword: "TradingObservability2026!"
+  
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+
+  service:
+    type: ClusterIP
+
+  persistence:
+    enabled: true
+    type: pvc
+    size: 2Gi
+    accessModes: ["ReadWriteOnce"]
+
+# ── Alertmanager Configuration ────────────────────────────────────────────────
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+
+  service:
+    type: ClusterIP
+
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['alertname', 'namespace']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'null'
+    receivers:
+    - name: 'null'
+
+# ── Sub-Chart Exporters ────────────────────────────────────────────────────────
+kube-state-metrics:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+prometheus-node-exporter:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
